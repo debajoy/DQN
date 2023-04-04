@@ -27,8 +27,8 @@ import argparse
 import numpy as np
 from collections import deque, namedtuple
 import sys
-from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter("runs")
+#from torch.utils.tensorboard import SummaryWriter
+#writer = SummaryWriter("runs")
 import matplotlib.pyplot as plt
 
 
@@ -138,7 +138,7 @@ class DQNAgent():
 		
 		self.t_train = 0
 	
-	def step(self, state, action, reward, next_state, done):
+	def step(self, state, action, reward, next_state, done,double):
 		"""
 		1. Adds (s,a,r,s') to the experience replay buffer, and updates the networks
 		2. Learns when the experience replay buffer has enough samples
@@ -149,7 +149,7 @@ class DQNAgent():
 					
 		if self.memory.size > self.batch_size:
 			experiences = self.memory.sample()
-			self.learn(experiences, self.discount) #To be implemented
+			self.learn(experiences, self.discount,double) #To be implemented
 		
 		if (self.t_train % self.update_freq) == 0:
 			self.target_update(self.Q, self.Q_target, self.tau) #To be implemented 
@@ -171,7 +171,7 @@ class DQNAgent():
 			return action
 		################################# 
 
-	def learn(self, experiences, discount):
+	def learn(self, experiences, discount,double):
 		"""
 		TODO: Complete this block to update the Q-Network using the target network
 		1. Compute target using  self.Q_target ( target = r + discount * max_b [Q_target(s,b)] )
@@ -184,11 +184,17 @@ class DQNAgent():
 		states, actions, rewards, next_states, dones = experiences
 		
 		y = self.Q(states).gather(1,actions)
-		action = self.Q(next_states).detach()
-		max_action = action.argmax(1).unsqueeze(1)
-		target_q = self.Q_target(next_states).gather(1,max_action)
-		y_hat = rewards+discount*target_q*(1-dones)
-		
+		if double==True:
+			action = self.Q(next_states).detach()
+			max_action = action.argmax(1).unsqueeze(1)
+			target_q = self.Q_target(next_states).gather(1,max_action)
+			y_hat = rewards+discount*target_q*(1-dones)
+		else:
+			action = self.Q_target(next_states).detach()
+			max_action = action.max(1)[0].unsqueeze(1)
+			y_hat = rewards+discount*max_action*(1-dones)
+
+			
 		criterion = nn.MSELoss()
 		loss = criterion(y,y_hat)
 		self.optimizer.zero_grad()
@@ -257,10 +263,12 @@ if __name__ == "__main__":
 	 	"batch_size":args.batch_size,
 	 	"gpu_index":args.gpu_index
 	}	
+	
 	learner = DQNAgent(**kwargs) #Creating the DQN learning agent
 	score =[]
 	moving_window = deque(maxlen=100)
 	epsilon = args.epsilon_start
+	print("Training DQN on Lunar Lander")
 	for e in range(args.n_episodes):
 		state, _ = env.reset(seed=args.seed)
 		curr_reward = 0
@@ -268,33 +276,70 @@ if __name__ == "__main__":
 			action = learner.select_action(state,epsilon) #To be implemented
 			n_state,reward,terminated,truncated,_ = env.step(action)
 			done = terminated or truncated 
-			learner.step(state,action,reward,n_state,done) #To be implemented
+			learner.step(state,action,reward,n_state,done,False) #To be implemented
 			state = n_state
 			curr_reward += reward
 			if done:
 				break
 		moving_window.append(curr_reward)
-		score.append(curr_reward)
 
-		""""
-		TODO: Write code for decaying the exploration rate using args.epsilon_decay
-		and args.epsilon_end. Note that epsilon has been initialized to args.epsilon_start  
-		1. You are encouraged to try new methods
-		"""
 		###### TYPE YOUR CODE HERE ######
 		epsilon = max(epsilon*args.epsilon_decay,args.epsilon_end)
 		#################################	
 		
 		if e % 100 == 0:
 			print('Episode Number {} Average Episodic Reward (over 100 episodes): {:.2f}'.format(e, np.mean(moving_window)))
-			writer.add_scalar('Episodic Rewards vs training iterations',np.mean(moving_window),e)
+			#writer.add_scalar('Episodic Rewards vs training iterations',np.mean(moving_window),e)
+			score.append(np.mean(moving_window))
+	
+	print("___________________________________________")
+	print("Training a DDQN on Lunar Lander")
+
+
+	learner2 = DQNAgent(**kwargs)
+	score2=[]
+	moving_window_single=deque(maxlen=100)
+	epsilon_2= args.epsilon_start
+	epoch_hist=[]
+
+	for e in range(args.n_episodes):
+		state, _ = env.reset(seed=args.seed)
+		curr_reward = 0
+		for t in range(args.max_esp_len):
+			action = learner2.select_action(state,epsilon_2) #To be implemented
+			n_state,reward,terminated,truncated,_ = env.step(action)
+			done = terminated or truncated 
+			learner2.step(state,action,reward,n_state,done,True) #To be implemented
+			state = n_state
+			curr_reward += reward
+			if done:
+				break
+		moving_window_single.append(curr_reward)
+
+		if e % 100 == 0:
+			print('Episode Number {} Average Episodic Reward (over 100 episodes): {:.2f}'.format(e, np.mean(moving_window_single)))
+			#writer.add_scalar('Episodic Rewards vs training iterations',np.mean(moving_window),e)
+			score2.append(np.mean(moving_window_single))
+			epoch_hist.append(e)
+		
+		epsilon_2 = max(epsilon_2*args.epsilon_decay,args.epsilon_end)
+
 		""""
 		TODO: Write code for
 		1. Logging and plotting
 		2. Rendering the trained agent 
 		"""
 	###### TYPE YOUR CODE HERE ######
-		#Now that we have trained the environment lets render it
+		#Now that we have trained the environment lets render itprint("double",double)
+	plt.xlabel("No of training epochs")
+	plt.ylabel("Average episodic rewards over 100 epochs")
+	plt.title("Comparison between DQN and DDQN in Lunar Lander")
+	plt.plot(epoch_hist,score2,color='g',label='DDQN')
+	plt.plot(epoch_hist,score,color='r',label='DQN')
+	plt.legend(loc='upper left')
+	plt.savefig("Comparison.png")
+	plt.show()
+		
 	#################################
 
 
