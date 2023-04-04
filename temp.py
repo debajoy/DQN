@@ -1,0 +1,43 @@
+Training DQN on Lunar Lander
+Episode Number 0 Average Episodic Reward (over 100 episodes): -142.22
+Episode Number 100 Average Episodic Reward (over 100 episodes): -91.21
+Episode Number 200 Average Episodic Reward (over 100 episodes): -89.45
+Episode Number 300 Average Episodic Reward (over 100 episodes): -71.79
+Episode Number 400 Average Episodic Reward (over 100 episodes): -44.00
+Episode Number 500 Average Episodic Reward (over 100 episodes): 32.99
+Episode Number 600 Average Episodic Reward (over 100 episodes): 228.06
+Episode Number 700 Average Episodic Reward (over 100 episodes): 194.29
+Episode Number 800 Average Episodic Reward (over 100 episodes): 225.01
+Episode Number 900 Average Episodic Reward (over 100 episodes): 259.39
+Episode Number 1000 Average Episodic Reward (over 100 episodes): 262.21
+Episode Number 1100 Average Episodic Reward (over 100 episodes): 278.10
+Episode Number 1200 Average Episodic Reward (over 100 episodes): 286.84
+Episode Number 1300 Average Episodic Reward (over 100 episodes): 287.70
+Episode Number 1400 Average Episodic Reward (over 100 episodes): 270.43
+Episode Number 1500 Average Episodic Reward (over 100 episodes): 260.47
+Episode Number 1600 Average Episodic Reward (over 100 episodes): 203.04
+Episode Number 1700 Average Episodic Reward (over 100 episodes): 193.47
+Episode Number 1800 Average Episodic Reward (over 100 episodes): 241.97
+Episode Number 1900 Average Episodic Reward (over 100 episodes): 272.55
+___________________________________________
+Training a DDQN on Lunar Lander
+Episode Number 0 Average Episodic Reward (over 100 episodes): -80.60
+Episode Number 100 Average Episodic Reward (over 100 episodes): -95.72
+Episode Number 200 Average Episodic Reward (over 100 episodes): -90.65
+Episode Number 300 Average Episodic Reward (over 100 episodes): -91.15
+Episode Number 400 Average Episodic Reward (over 100 episodes): -71.95
+Episode Number 500 Average Episodic Reward (over 100 episodes): 36.32
+Episode Number 600 Average Episodic Reward (over 100 episodes): 114.67
+Episode Number 700 Average Episodic Reward (over 100 episodes): 160.71
+Episode Number 800 Average Episodic Reward (over 100 episodes): 199.64
+Episode Number 900 Average Episodic Reward (over 100 episodes): 263.88
+Episode Number 1000 Average Episodic Reward (over 100 episodes): 225.94
+Episode Number 1100 Average Episodic Reward (over 100 episodes): 266.27
+Episode Number 1200 Average Episodic Reward (over 100 episodes): 285.36
+Episode Number 1300 Average Episodic Reward (over 100 episodes): 281.39
+Episode Number 1400 Average Episodic Reward (over 100 episodes): 263.76
+Episode Number 1500 Average Episodic Reward (over 100 episodes): 294.39
+Episode Number 1600 Average Episodic Reward (over 100 episodes): 25.93
+Episode Number 1700 Average Episodic Reward (over 100 episodes): -118.89
+Episode Number 1800 Average Episodic Reward (over 100 episodes): 247.52
+Episode Number 1900 Average Episodic Reward (over 100 episodes): 236.26
